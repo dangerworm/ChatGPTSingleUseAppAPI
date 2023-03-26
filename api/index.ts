@@ -53,7 +53,13 @@ const createApp = async (prompt: string): Promise<CreateChatCompletionResponse> 
   const request = {
     model: "gpt-3.5-turbo",
     messages: [
-      { role: "system", content: "You are a helpful assistant for creating single-page applications. Every time you receive a prompt you will return a single page of HTML, CSS, and Javascript which, when put into a '.html' file, will act to solve the user's problem or problems. Import jQuery regardless of whether it is used, and use Bootstrap for styling. You must not include anything except the code." },
+      {
+        role: "system", content: "You are a helpful assistant for creating single-page applications. " +
+          "Every time you receive a prompt you will return a single page of HTML, CSS, and Javascript which, " +
+          "when put into a '.html' file, will act to solve the user's problem or problems. " +
+          "Import jQuery regardless of whether it is used, and use Bootstrap for styling. " +
+          "Make it as user-friendly as possible."
+      },
       { role: "user", content: prompt }
     ]
   } as CreateChatCompletionRequest;
@@ -103,31 +109,32 @@ app.post('/api/create-app', async (request, response) => {
   const html = content.substring(startIndex, stopIndex);
 
   // Write file to new app folder
-  fs.mkdir(`../apps/${conversation.id}`, () => {
-    // console.log(`Directory 'apps/${conversation.id}' created successfully`)
+  const directory = `./apps/${conversation.id}`;
+  fs.mkdir(directory, () => {
+    // console.log(`Directory '${directory}' created successfully`)
   });
-  const stream = fs.createWriteStream(`../apps/${conversation.id}/index.html`);
+  const stream = fs.createWriteStream(`${directory}/index.html`);
   stream.write(html, () => {
     // console.log(`File 'apps/${conversation.id}/index.html' created successfully`);
 
     stream.on('finish', async () => {
       // Push to git
       try {
-        await git.add('..');
+        await git.add('.');
         await git.commit(`Created app '${conversation.id}'`);
         await git.push('origin', 'main');
         // console.log('Committed and pushed new file');
+
+        const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
+        response.type('application/json').send(JSON.stringify({
+          message: conversation.choices[0].message?.content.substring(0, startIndex - 9),
+          url: url
+        }));
       }
       catch (error: any) {
         console.log("Error committing to git", error.errorMessage);
-        response.status(400).send(error.errorMessage);
+        response.status(400).send(JSON.stringify(error));
       }
-    
-      const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
-      response.type('application/json').send(JSON.stringify({
-        message: conversation.choices[0].message?.content.substring(0, startIndex - 9),
-        url: url
-      }))
     })
   });
   stream.end();

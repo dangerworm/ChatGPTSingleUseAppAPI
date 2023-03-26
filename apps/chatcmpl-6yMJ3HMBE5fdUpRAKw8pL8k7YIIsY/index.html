@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scientific Calculator</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script>
+		//function to evaluate the expression entered by user
+		function calculate(){
+		  try{
+		    var x = document.getElementById('result').value;
+		    var y = eval(x);
+		    document.getElementById('result').value = y;
+		  }
+		  catch(e){
+		    alert('Invalid Expression!');
+		  }
+		}
+		//function to clear the input field
+		function clearDisplay(){
+			document.getElementById('result').value = "";
+		}
+		//function to append input to the display
+		function appendInput(displayValue){
+			document.getElementById('result').value += displayValue;
+		}
+	</script>
+	<style>
+		body{
+			background-color: #f2f2f2;
+		}
+		.container{
+			margin-top: 20px;
+			background-color: #fff;
+			padding: 20px;
+			border-radius: 10px;
+			box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+		}
+		.row{
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h2 class="text-center">Scientific Calculator</h2>
+		<div class="row">
+			<div class="col-md-12">
+				<input type="text" class="form-control" id="result" readonly>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('Math.PI')">π</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('Math.E')">e</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-danger btn-block" onclick="clearDisplay()">C</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('**')">^</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('Math.sin(')">sin</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('Math.cos(')">cos</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('Math.tan(')">tan</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('Math.log(')">log</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('7')">7</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('8')">8</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('9')">9</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('/')">&#247;</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('4')">4</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('5')">5</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('6')">6</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('*')">&times;</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('1')">1</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('2')">2</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('3')">3</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('-')">&minus;</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="appendInput('0')">0</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('.')">.</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('(')">(</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput(')')">)</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6">
+				<button class="btn btn-default btn-block" onclick="appendInput('Math.sqrt(')">&#8730;</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-default btn-block" onclick="appendInput('+')">&#43;</button>
+			</div>
+			<div class="col-md-3">
+				<button class="btn btn-primary btn-block" onclick="calculate()">=</button>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

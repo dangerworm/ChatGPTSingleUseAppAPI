@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scientific Calculator</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6UG580iktRgBhqNQfaQ6WyfIMvOJC2N8iv" crossorigin="anonymous">
+	<style>
+		.container {
+			margin-top: 50px;
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.btn-group-vertical {
+			width: 100px;
+			margin-right: 10px;
+			margin-bottom: 10px;
+		}
+
+		.screen {
+			background-color: #f2f2f2;
+			height: 60px;
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			padding: 10px;
+			font-size: 36px;
+			font-weight: bold;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<div class="screen" id="result">0</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-12">
+				<div class="btn-group-vertical">
+					<button class="btn btn-primary" id="btn1" onclick="numberPressed('1')">1</button>
+					<button class="btn btn-primary" id="btn2" onclick="numberPressed('2')">2</button>
+					<button class="btn btn-primary" id="btn3" onclick="numberPressed('3')">3</button>
+					<button class="btn btn-primary" id="btn4" onclick="numberPressed('4')">4</button>
+					<button class="btn btn-primary" id="btn5" onclick="numberPressed('5')">5</button>
+					<button class="btn btn-primary" id="btn6" onclick="numberPressed('6')">6</button>
+					<button class="btn btn-primary" id="btn7" onclick="numberPressed('7')">7</button>
+					<button class="btn btn-primary" id="btn8" onclick="numberPressed('8')">8</button>
+					<button class="btn btn-primary" id="btn9" onclick="numberPressed('9')">9</button>
+					<button class="btn btn-primary" id="btn0" onclick="numberPressed('0')">0</button>
+					<button class="btn btn-primary" id="btnDecimal" onclick="decimal()">.</button>
+				</div>
+				<div class="btn-group-vertical">
+					<button class="btn btn-info" onclick="operatorPressed('/')">÷</button>
+					<button class="btn btn-info" onclick="operatorPressed('*')">x</button>
+					<button class="btn btn-info" onclick="operatorPressed('-')">-</button>
+					<button class="btn btn-info" onclick="operatorPressed('+')">+</button>
+					<button class="btn btn-info" onclick="backspace()">CE</button>
+					<button class="btn btn-info" onclick="allClear()">AC</button>
+				</div>
+				<div class="btn-group-vertical">
+					<button class="btn btn-success" onclick="evaluate()">=</button>
+					<button class="btn btn-secondary" onclick="trigPressed('sin')">sin</button>
+					<button class="btn btn-secondary" onclick="trigPressed('cos')">cos</button>
+					<button class="btn btn-secondary" onclick="trigPressed('tan')">tan</button>
+					<button class="btn btn-secondary" onclick="sqrt()">√</button>
+					<button class="btn btn-secondary" onclick="power()">^</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js" integrity="sha384-0mSO1TuTA7M/UQI+CmAVnYl79UOPhNlE73S2SNT+85sO/4XlRRhd6I+E83lEIlbB" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script>
+		var currentNumber = "0";
+		var result = "0";
+		var currentOperator = null;
+		var decimalCount = 0;
+		var screen = $("#result");
+
+		function numberPressed(num) {
+			if (currentNumber == "0") {
+				currentNumber = num;
+			} else {
+				currentNumber += num;
+			}
+			updateScreen();
+		}
+
+		function operatorPressed(operator) {
+			if (currentOperator != null) {
+				evaluate();
+			}
+			result = currentNumber;
+			currentOperator = operator;
+			currentNumber = "0";
+			decimalCount = 0;
+		}
+
+		function evaluate() {
+			if (currentOperator == "/") {
+				result = parseFloat(result) / parseFloat(currentNumber);
+			} else if (currentOperator == "*") {
+				result = parseFloat(result) * parseFloat(currentNumber);
+			} else if (currentOperator == "-") {
+				result = parseFloat(result) - parseFloat(currentNumber);
+			} else if (currentOperator == "+") {
+				result = parseFloat(result) + parseFloat(currentNumber);
+			} else if (currentOperator == "^") {
+				result = Math.pow(parseFloat(result), parseFloat(currentNumber));
+			}
+			currentNumber = result.toString();
+			currentOperator = null;
+			decimalCount = 0;
+			updateScreen();
+		}
+
+		function allClear() {
+			currentNumber = "0";
+			result = "0";
+			currentOperator = null;
+			decimalCount = 0;
+			updateScreen();
+		}
+
+		function backspace() {
+			currentNumber = currentNumber.slice(0, -1);
+			if (currentNumber == "") {
+				currentNumber = "0";
+			}
+			updateScreen();
+		}
+
+		function decimal() {
+			if (decimalCount == 0) {
+				currentNumber += ".";
+				decimalCount++;
+			}
+			updateScreen();
+		}
+
+		function trigPressed(trig) {
+			if (trig == "sin") {
+				result = Math.sin(parseFloat(currentNumber));
+			} else if (trig == "cos") {
+				result = Math.cos(parseFloat(currentNumber));
+			} else if (trig == "tan") {
+				result = Math.tan(parseFloat(currentNumber));
+			}
+			currentNumber = result.toString();
+			currentOperator = null;
+			decimalCount = 0;
+			updateScreen();
+		}
+
+		function sqrt() {
+			result = Math.sqrt(parseFloat(currentNumber));
+			currentNumber = result.toString();
+			decimalCount = 0;
+			updateScreen();
+		}
+
+		function power() {
+			currentOperator = "^";
+			result = currentNumber;
+			currentNumber = "0";
+			decimalCount = 0;
+			updateScreen();
+		}
+
+		function updateScreen() {
+			screen.html(currentNumber);
+		}
+	</script>
+</body>
+</html>

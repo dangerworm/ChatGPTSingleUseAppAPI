@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scientific Calculator</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+
+	<div class="container mt-5">
+
+		<!-- Calculator Display -->
+		<div class="form-group">
+			<input type="text" id="display" class="form-control text-right" placeholder="0">
+		</div>
+
+		<!-- Calculator Buttons -->
+		<div class="row">
+
+			<!-- Operators -->
+			<div class="col-lg-9">
+
+				<div class="row">
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-clear">C</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-pow">x²</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-sqrt">√</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-danger btn-block" id="btn-del">&larr;</button>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-sin">sin</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-cos">cos</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-tan">tan</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-pi">π</button>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-factorial">n!</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-log">log</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-ln">ln</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-e">e</button>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-pow-y">x^y</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-nthroot">y√x</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-percent">%</button>
+					</div>
+					<div class="col-lg-3 mb-2">
+						<button class="btn btn-outline-success btn-block" id="btn-equal">=</button>
+					</div>
+				</div>
+
+			</div>
+
+			<!-- Numeric and Decimal -->
+			<div class="col-lg-3">
+
+				<div class="row">
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-7">7</button>
+					</div>
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-8">8</button>
+					</div>
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-9">9</button>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-4">4</button>
+					</div>
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-5">5</button>
+					</div>
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-6">6</button>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-1">1</button>
+					</div>
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-2">2</button>
+					</div>
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-3">3</button>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block btn-number" id="btn-0">0</button>
+					</div>
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-decimal">.</button>
+					</div>
+					<div class="col-lg-4 mb-2">
+						<button class="btn btn-outline-secondary btn-block" id="btn-negate">±</button>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+	</div>
+
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+	<!-- Bootstrap JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+	<!-- Calculator JS -->
+	<script>
+		$(document).ready(function() {
+			var memory = 0;
+			var number = "";
+			var operator = "";
+			var operation = "";
+
+			// Display Number and Operator
+			function display() {
+				$("#display").val(number + " " + operator);
+			}
+
+			// Reset Values
+			function reset() {
+				number = "";
+				operator = "";
+				operation = "";
+				display();
+			}
+
+			// Memory Functions
+			$("#btn-mc").click(function() {
+				memory = 0;
+			});
+			$("#btn-mr").click(function() {
+				number = memory.toString();
+				display();
+			});
+			$("#btn-ms").click(function() {
+				memory = parseFloat(number);
+			});
+			$("#btn-mplus").click(function() {
+				memory += parseFloat(number);
+			});
+
+			// Numeric and Decimal Buttons
+			$(".btn-number").click(function() {
+				if (number.length < 20) {
+					number += $(this).text();
+					display();
+				}
+			});
+			$("#btn-decimal").click(function() {
+				if (number.indexOf(".") == -1 && number.length < 20) {
+					number += ".";
+					display();
+				}
+			});
+			$("#btn-negate").click(function() {
+				number = (-1 * parseFloat(number)).toString();
+				display();
+			});
+
+			// Operator Buttons
+			$("#btn-add").click(function() {
+				operator = "+";
+				operation = "add";
+				if (number != "") {
+					memory = parseFloat(number);
+				}
+				number = "";
+				display();
+			});
+			$("#btn-subtract").click(function() {
+				operator = "-";
+				operation = "subtract";
+				if (number != "") {
+					memory = parseFloat(number);
+				}
+				number = "";
+				display();
+			});
+			$("#btn-multiply").click(function() {
+				operator = "x";
+				operation = "multiply";
+				if (number != "") {
+					memory = parseFloat(number);
+				}
+				number = "";
+				display();
+			});
+			$("#btn-divide").click(function() {
+				operator = "÷";
+				operation = "divide";
+				if (number != "") {
+					memory = parseFloat(number);
+				}
+				number = "";
+				display();
+			});
+
+			// Clear and Delete Buttons
+			$("#btn-clear").click(function() {
+				reset();
+				memory = 0;
+			});
+			$("#btn-del").click(function() {
+				number = number.slice(0, -1);
+				display();
+			});
+
+			// Equal Button
+			$("#btn-equal").click(function() {
+				var result = 0;
+				if (operation === "") {
+					result = parseFloat(number);
+				} else {
+					switch(operation) {
+						case "add":
+							result = memory + parseFloat(number);
+							break;
+						case "subtract":
+							result = memory - parseFloat(number);
+							break;
+						case "multiply":
+							result = memory * parseFloat(number);
+							break;
+						case "divide":
+							result = memory / parseFloat(number);
+							break;
+					}
+				}
+				reset();
+				number = result.toString();
+				display();
+			});
+
+			// Scientific Calculator Buttons
+			$("#btn-pow").click(function() {
+				number = Math.pow(parseFloat(number), 2).toString();
+				display();
+			});
+			$("#btn-sqrt").click(function() {
+				number = Math.sqrt(parseFloat(number)).toString();
+				display();
+			});
+			$("#btn-sin").click(function() {
+				number = Math.sin(parseFloat(number)).toString();
+				display();
+			});
+			$("#btn-cos").click(function() {
+				number = Math.cos(parseFloat(number)).toString();
+				display();
+			});
+			$("#btn-tan").click(function() {
+				number = Math.tan(parseFloat(number)).toString();
+				display();
+			});
+			$("#btn-factorial").click(function() {
+				var n = parseFloat(number);
+				var result = 1;
+				for (var i = 2; i <= n; i++) {
+					result *= i;
+				}
+				number = result.toString();
+				display();
+			});
+			$("#btn-log").click(function() {
+				number = Math.log10(parseFloat(number)).toString();
+				display();
+			});
+			$("#btn-ln").click(function() {
+				number = Math.log(parseFloat(number)).toString();
+				display();
+			});
+			$("#btn-pi").click(function() {
+				number = Math.PI.toString();
+				display();
+			});
+			$("#btn-pow-y").click(function() {
+				operator = "x^y";
+				operation = "pow-y";
+				if (number != "") {
+					memory = parseFloat(number);
+				}
+				number = "";
+				display();
+			});
+			$("#btn-nthroot").click(function() {
+				operator = "y√x";
+				operation = "nthroot";
+				if (number != "") {
+					memory = parseFloat(number);
+				}
+				number = "";
+				display();
+			});
+			$("#btn-percent").click(function() {
+				number = (parseFloat(number) / 100).toString();
+				display();
+			});
+			$("#btn-e").click(function() {
+				number = Math.E.toString();
+				display();
+			});
+
+			// Power and Nth Root Operators
+			$("#btn-equal").click(function() {
+				var result = 0;
+				switch(operation) {
+					case "pow-y":
+						result = Math.pow(memory, parseFloat(number));
+						break;
+					case "nthroot":
+						result = Math.pow(memory, 1 / parseFloat(number));
+						break;
+				}
+				reset();
+				number = result.toString();
+				display();
+			});
+
+		});
+	</script>
+
+</body>
+</html>
