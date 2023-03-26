@@ -114,17 +114,18 @@ app.post('/api/create-app', async (request, response) => {
 
   // Push to git
   try {
-    await git.add('.');
-    await git.commit(request.body['commit-message']);
+    await git.add('..');
+    await git.commit(`Created app '${conversation.id}'`);
     await git.push('origin', 'main');
-    response.send('Changes committed and pushed');
+    console.log('Committed and pushed new file');
   }
   catch (error: any) {
     console.log(error.errorMessage);
     response.status(400).send(error.errorMessage);
   }
 
-  response.type('text/json').send(JSON.stringify(html));
+  const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
+  response.send(`Congratulations! Your application can be viewed at ${url}.`);
 });
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`))
