@@ -3,10 +3,6 @@ export interface Model {
   created: Date;
 }
 
-export interface GetModelsResponse {
-  models: Model[]
-}
-
 export interface CreateAppResponse {
   error?: string;
   message: string;

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
-import { createContext, useContext, useEffect, useState } from "react";
-import { CreateAppResponse, GetModelsResponse, Model } from "../types";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { CreateAppResponse, Model } from "../types";
 
 export interface IChatGPTContext {
   error: string | undefined;
@@ -20,15 +20,16 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
   const [models, setModels] = useState<Model[]>([]);
   const [url, setUrl] = useState<string>();
 
-  const baseUrl = process.env.CHAT_GPT_SINGLE_USE_APP_API_URL;
-  console.log("Base URL", baseUrl);
+  const baseUrl = process.env.REACT_APP_CHAT_GPT_SINGLE_USE_APP_API_URL;
 
-  const createApp = (modelId: string, prompt: string) => {
+  const createApp = useCallback((modelId: string, prompt: string) => {
     if (!modelId) {
+      setError('Please select a model')
       return;
     }
 
     if (!prompt) {
+      setError('Please write a prompt')
       return;
     }
 
@@ -43,13 +44,13 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
       .catch(response => {
         setError(response);
       });
-  };
+  }, [baseUrl]);
 
   useEffect(() => {
     async function getModels() {
       await axios.get(`${baseUrl}/get-models`)
-      .then(({data}: AxiosResponse<GetModelsResponse, any>) => {
-        setModels(data.models);
+      .then(({data}: AxiosResponse<any, any>) => {
+        setModels(data as Model[]);
       });
     }
     getModels();

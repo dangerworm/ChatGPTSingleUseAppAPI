@@ -1,4 +1,4 @@
-import { Button, FormControl, Grid, MenuItem, Paper, Select, TextField } from '@mui/material';
+import { Alert, Backdrop, Button, CircularProgress, FormControl, Grid, MenuItem, Paper, Select, TextField } from '@mui/material';
 import { useState } from 'react';
 import { useChatGPTContext } from './Contexts/ChatGPTContext';
 import { Model } from './types';
@@ -59,7 +59,7 @@ export const Home = () => {
                 }}
               >
                 {models.map((model: Model, i: number) =>
-                  <MenuItem key={`$menuItem-${model.id}}`} value={model.id}>{model.id} ({model.created.toDateString()})</MenuItem>
+                  <MenuItem key={`$menuItem-${model.id}}`} value={model.id}>{model.id} (Created on {new Date(model.created).toUTCString()})</MenuItem>
                 )}
               </Select>
             }
@@ -76,10 +76,24 @@ export const Home = () => {
                   setPrompt(event.target.value);
                 }} />
             </FormControl>
-            <Button
-              onClick={() => createApp(modelId, prompt)}>
-              Create
-            </Button>
+            {error && 
+              <Alert severity='error' style={{ margin: '1em 0' }}>{error}</Alert>
+            }
+            <>
+              <Button
+                onClick={() => createApp(modelId, prompt)}>
+                Create
+              </Button>
+              <Backdrop
+                sx={{
+                  color: '#fff',
+                  zIndex: (theme) => theme.zIndex.drawer + 1
+                }}
+                open={loading}
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
+            </>
           </Paper>
         </Grid >
       </Grid >
