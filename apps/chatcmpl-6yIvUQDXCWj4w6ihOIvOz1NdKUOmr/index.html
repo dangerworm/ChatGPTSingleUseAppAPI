@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Graphing Calculator</title>
+
+	<style>
+		canvas {
+			border: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<h1>Graphing Calculator</h1>
+	<p>Enter a mathematical expression below to graph:</p>
+
+	<input type="text" id="expression">
+	<button onclick="drawGraph()">Graph</button>
+
+	<br><br>
+
+	<canvas id="graph" width="800" height="600"></canvas>
+
+	<script>
+
+		function drawGraph() {
+			var canvas = document.getElementById("graph");
+			var ctx = canvas.getContext("2d");
+
+			// Clear the canvas
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+			// Get equation from input field
+			var equation = document.getElementById("expression").value;
+
+			// Define variables
+			var xMin = -10;
+			var xMax = 10;
+			var xStep = 0.1;
+			var yMin = -10;
+			var yMax = 10;
+			var yStep = 0.1;
+
+			// Draw x-axis
+			ctx.beginPath();
+			ctx.moveTo(0, canvas.height / 2);
+			ctx.lineTo(canvas.width, canvas.height / 2);
+			ctx.stroke();
+
+			// Draw y-axis
+			ctx.beginPath();
+			ctx.moveTo(canvas.width / 2, 0);
+			ctx.lineTo(canvas.width / 2, canvas.height);
+			ctx.stroke();
+
+			// Draw function
+			ctx.beginPath();
+			ctx.moveTo(getXPixel(xMin), getYPixel(evalEquation(xMin, equation)));
+
+			for (var x = xMin + xStep; x < xMax; x += xStep) {
+				ctx.lineTo(getXPixel(x), getYPixel(evalEquation(x, equation)));
+			}
+
+			ctx.stroke();
+		}
+
+		function evalEquation(x, equation) {
+			return eval(equation);
+		}
+
+		function getXPixel(x) {
+			return (x + 10) * 40;
+		}
+
+		function getYPixel(y) {
+			return (10 - y) * 40;
+		}
+
+	</script>
+</body>
+</html>
