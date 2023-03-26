@@ -43,8 +43,8 @@ const getModels = async () => {
     return response.data.data;
   }
   catch (error) {
-    console.log("Error running getModels", error.response);
-    return error.errorMessage;
+    console.log("Error running getModels", error);
+    return [];
   }
 }
 
@@ -69,7 +69,7 @@ const createApp = async (model, prompt) => {
   }
   catch (error) {
     console.log("Error running createApp", error.response);
-    return error.errorMessage;
+    return error;
   }
 }
 
@@ -89,15 +89,20 @@ app.options('*', (req, res) => {
 });
 
 app.get('/api/get-models', async (request, response) => {
-  const models = await getModels();
+  try {
+    const models = await getModels();
+    const output = models.map((model) => ({
+      id: model.id,
+      created: new Date(model.created * 1000).toISOString()
+    }));
+    output.sort((a, b) => a.created > b.created ? -1 : 1);
 
-  const output = models.map((model) => ({
-    id: model.id,
-    created: new Date(model.created * 1000).toISOString()
-  }));
-  output.sort((a, b) => a.created > b.created ? -1 : 1);
-
-  response.type('application/json').send(JSON.stringify(output));
+    response.type('application/json').send(JSON.stringify(output));
+  }
+  catch (error) {
+    console.log("Error getting models", error);
+    response.status(400).send(JSON.stringify(error));
+  }
 });
 
 app.post('/api/create-app', async (request, response) => {
@@ -106,10 +111,24 @@ app.post('/api/create-app', async (request, response) => {
     return;
   }
 
-  const conversation = await createApp(request.body['model'], request.body['prompt']);
-  const content = conversation.choices[0].message?.content;
-  if (!content) {
-    response.send('Sorry, OpenAI did not return anything useful');
+  let conversation;
+  let content;
+  try {
+    conversation = await createApp(request.body['model'], request.body['prompt']);
+    if (!conversation) {
+      response.status(444).send('Sorry, OpenAI did not return anything');
+      return;
+    }
+
+    content = conversation.choices[0].message?.content;
+    if (!content) {
+      response.status(444).send('Sorry, OpenAI did not return anything useful');
+      return;
+    }
+  }
+  catch (error) {
+    console.log("Error creating app", error);
+    response.status(500).send(JSON.stringify(error));
     return;
   }
 

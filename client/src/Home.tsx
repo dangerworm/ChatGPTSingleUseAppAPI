@@ -32,6 +32,10 @@ export const Home = () => {
               click the 'Create' button and ChatGPT does the rest. Results are dependent on the prompt,
               just like ChatGPT, and you'll only get what you ask for!
             </p>
+            <p>
+              At the moment only simple apps can be created as there is a timeout of 30 seconds, so
+              don't ask for anything too complicated for now.
+            </p>
           </Paper>
         </Grid>
       </Grid>
@@ -76,24 +80,26 @@ export const Home = () => {
                   setPrompt(event.target.value);
                 }} />
             </FormControl>
-            {error && 
+            {error &&
               <Alert severity='error' style={{ margin: '1em 0' }}>{error}</Alert>
             }
-            <>
-              <Button
-                onClick={() => createApp(modelId, prompt)}>
-                Create
-              </Button>
-              <Backdrop
-                sx={{
-                  color: '#fff',
-                  zIndex: (theme) => theme.zIndex.drawer + 1
-                }}
-                open={loading}
-              >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </>
+            <Button
+              onClick={() => createApp(modelId, prompt)}
+              disabled={loading}>
+              {loading ? <CircularProgress /> : 'Create'}
+            </Button>
+            {loading &&
+              <Alert severity='info' style={{ marginTop: '1em' }}>
+                Your app is being created! It usually takes about 30 seconds...just sit tight.
+              </Alert>
+            }
+            {
+              message && url &&
+              <Alert severity='success'>
+                Your application has been created! Please click <a href={url} target='_blank' rel='noreferrer'>here</a>
+                to go to your app.
+              </Alert>
+            }
           </Paper>
         </Grid >
       </Grid >
