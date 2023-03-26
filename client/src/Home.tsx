@@ -11,10 +11,10 @@ export const Home = () => {
   const [prompt, setPrompt] = useState('');
 
   useEffect(() => {
-    const appPreviewDiv = document.getElementById('app-preview');
+    const appPreviewDiv = document.getElementById('app-preview') as any;
 
     if (appPreviewDiv && pageCode) {
-      appPreviewDiv.innerHTML = pageCode;
+      appPreviewDiv.src = "data:text/html;charset=utf-8," + pageCode;
     }
   }, [pageCode])
 
@@ -37,12 +37,12 @@ export const Home = () => {
               Introduction
             </h2>
             <p>
-              This site creates single-use apps in about a minute. Type in what you want it to do,
-              click the 'Create' button and ChatGPT does the rest. Results are dependent on the prompt,
-              just like ChatGPT, and you'll only get what you ask for!
+              This site creates single-use apps. Type in what you want it to do, click the 'Create'
+              button and ChatGPT does the rest. Results are dependent on the prompt, just like ChatGPT,
+              so you'll only get what you ask for!
             </p>
             <p>
-              At the moment only simple apps can be created as there is a timeout of 60 seconds, so
+              At the moment only simple apps can be created as there is a timeout of 30 seconds, so
               don't ask for anything too complicated for now.
             </p>
           </Paper>
@@ -110,8 +110,8 @@ export const Home = () => {
                   Your application has been created! The app is previewed below, but if you want
                   to keep it you can copy the code underneath the preview below into a .html file.
                 </Alert>
-                <div id='app-preview' style={{ border: 'solid grey 1px', borderRadius: '5px', margin: '1em 0', minHeight: '20vh', padding: '1em' }}>
-                </div>
+                <iframe id='app-preview' title='app-preview' style={{ border: 'solid grey 1px', borderRadius: '5px', margin: '1em 0', minHeight: '20vh', padding: '1em' }}>
+                </iframe>
                 <div style={{ border: 'solid grey 1px', borderRadius: '5px', margin: '0.5em 0', padding: '1em' }}>
                   <Button
                     variant='contained'

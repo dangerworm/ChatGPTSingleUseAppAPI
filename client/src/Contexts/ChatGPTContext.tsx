@@ -36,7 +36,7 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
     }
 
     setLoading(true);
-    axios.post(`${baseUrl}/create-app`, { model: modelId, prompt })
+    axios.post(`${baseUrl}/create-app`, { model: modelId, prompt }, { timeout: 120000 })
       .then(({data: { error, message, pageCode, url}}: AxiosResponse<CreateAppResponse, any>) => {
         setError(error);
         setMessage(message);
