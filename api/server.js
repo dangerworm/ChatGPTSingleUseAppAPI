@@ -14,7 +14,8 @@ const git = simpleGit();
 const openAiKey = process.env.OPENAI_API_KEY || '';
 
 const openAiConfiguration = new openaiLibrary.Configuration({
-  apiKey: openAiKey
+  apiKey: openAiKey,
+  timeout: 120000
 });
 const openai = new openaiLibrary.OpenAIApi(openAiConfiguration);
 
