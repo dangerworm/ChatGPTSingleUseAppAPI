@@ -1,0 +1,130 @@
+import bodyParser from 'body-parser';
+import express from 'express';
+import fs from 'fs';
+import simpleGit from 'simple-git';
+import { OpenAIApi, Configuration, Model, CreateChatCompletionRequest, CreateChatCompletionResponse } from 'openai';
+import path from 'path';
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+const gitToken = process.env.GITHUB_SINGLE_USE_APP_API_PERSONAL_ACCESS_TOKEN || '';
+const git = simpleGit();
+
+const openAiKey = process.env.OPENAI_API_KEY || '';
+
+const openAiConfiguration = new Configuration({
+  apiKey: openAiKey
+});
+const openai = new OpenAIApi(openAiConfiguration);
+
+const isRequestBodyValid = (request: any, response: any, requiredBodyKeys: string[]) => {
+  let errorMessages: string[] = [];
+
+  for (let i in requiredBodyKeys) {
+    if (!request.body || !request.body[requiredBodyKeys[i]]) {
+      const errorMessage = `Request body did not contain key '${requiredBodyKeys[i]}'`;
+      errorMessages.push(errorMessage)
+      break;
+    }
+  }
+
+  if (errorMessages.length > 0) {
+    console.log(errorMessages);
+    response.status(400).send(errorMessages.join('; '));
+    return false;
+  }
+
+  return true;
+}
+
+const getModels = async () => {
+  try {
+    const response = await openai.listModels();
+    return response.data.data as Model[];
+  }
+  catch (error: any) {
+    console.log(error.response);
+    return error.errorMessage;
+  }
+}
+
+const createApp = async (prompt: string): Promise<CreateChatCompletionResponse> => {
+  const request = {
+    model: "gpt-3.5-turbo",
+    messages: [
+      { role: "system", content: "You are a helpful assistant for creating single-page applications. Every time you receive a prompt you will return a single page of HTML, CSS, and Javascript which, when put into a '.html' file, will act to solve the user's problem or problems. You must not include anything except the code." },
+      { role: "user", content: prompt }
+    ]
+  } as CreateChatCompletionRequest;
+
+  try {
+    const response = await openai.createChatCompletion(request);
+    return response.data;
+  }
+  catch (error: any) {
+    console.log(error.response);
+    return error.errorMessage;
+  }
+}
+
+app
+  .use(bodyParser.urlencoded({ extended: true }))
+  .use(bodyParser.json());
+
+app.get('/api/get-models', async (request, response) => {
+  const models = await getModels();
+
+  const output = models.map((model: Model) => ({
+    id: model.id,
+    created: new Date(model.created * 1000).toISOString()
+  }));
+  output.sort((a: any, b: any) => a.created > b.created ? -1 : 1);
+
+  response.type('application/json').send(JSON.stringify(output));
+});
+
+app.post('/api/create-app', async (request, response) => {
+  const requiredBodyKeys = ['prompt'];
+  if (!isRequestBodyValid(request, response, requiredBodyKeys)) {
+    return;
+  }
+
+  const conversation = await createApp(request.body['prompt']);
+  const content = conversation.choices[0].message?.content;
+  if (!content) {
+    response.send('Sorry, OpenAI did not return anything useful');
+    return;
+  }
+
+  // ChatGPT insists on saying something around the code, so strip it off
+  const startIndex = content.indexOf('<!DOCTYPE html>');
+  const stopIndex = content.indexOf('</html>') + 7;
+  const html = content.substring(startIndex, stopIndex);
+
+  // Write file to new app folder
+  fs.mkdir(`../apps/${conversation.id}`, () => {
+    console.log(`Directory 'apps/${conversation.id}' created successfully`)
+  });
+  const stream = fs.createWriteStream(`../apps/${conversation.id}/index.html`);
+  stream.write(html, () => {
+    console.log(`File 'apps/${conversation.id}/index.html' created successfully`)
+  });
+  stream.close();
+
+  // Push to git
+  try {
+    await git.add('.');
+    await git.commit(request.body['commit-message']);
+    await git.push('origin', 'main');
+    response.send('Changes committed and pushed');
+  }
+  catch (error: any) {
+    console.log(error.errorMessage);
+    response.status(400).send(error.errorMessage);
+  }
+
+  response.type('text/json').send(JSON.stringify(html));
+});
+
+app.listen(PORT, () => console.log(`Listening on ${PORT}`))
