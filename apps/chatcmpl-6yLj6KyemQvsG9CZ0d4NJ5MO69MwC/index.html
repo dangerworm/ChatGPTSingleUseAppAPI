@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Scientific Calculator</title>
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fyEY7qlj6q6oN7g868T/p9FgyP1N9M34wo" crossorigin="anonymous">
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6SpeevoBHdhAu8DMFjJ+QRVoNpWX+F9mG+CGsknELOTf/6UwJovyU1igtOWU" crossorigin="anonymous"></script>
+
+  <!-- Custom CSS -->
+  <style>
+    body {
+      padding: 20px;
+    }
+  </style>
+
+</head>
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 offset-md-4">
+        <div class="card">
+          <div class="card-body">
+            <input type="text" class="form-control mb-3" id="result" value="0"/>
+            <button class="btn btn-primary btn-block mb-2" onclick="clearResult();">C</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="remove();">&lt;-</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insert('.');">.</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insert('^');">^</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insert(Math.PI);">π</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insert(Math.E);">e</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('7');">7</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('8');">8</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('9');">9</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insert('+');">+</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('4');">4</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('5');">5</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('6');">6</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insert('-');">-</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('1');">1</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('2');">2</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('3');">3</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insert('*');">*</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insertValue('0');">0</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="insert('/');">/</button>
+            <button class="btn btn-primary btn-block mb-2" onclick="calculate();">=</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calculator Functions -->
+  <script>
+    function insert(value) {
+      document.getElementById('result').value += value;
+    }
+
+    function insertValue(value) {
+      if (document.getElementById('result').value == '0') {
+        document.getElementById('result').value = value;
+      } else {
+        document.getElementById('result').value += value;
+      }
+    }
+
+    function remove() {
+      var value = document.getElementById('result').value;
+      document.getElementById('result').value = value.substr(0, value.length - 1);
+    }
+
+    function clearResult() {
+      document.getElementById('result').value = '0';
+    }
+
+    function calculate() {
+      try {
+        var result = eval(document.getElementById('result').value);
+        document.getElementById('result').value = result;
+      } catch (e) {
+        alert('Error: ' + e);
+      }
+    }
+  </script>
+
+</body>
+</html>

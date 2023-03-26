@@ -107,28 +107,30 @@ app.post('/api/create-app', async (request, response) => {
     console.log(`Directory 'apps/${conversation.id}' created successfully`)
   });
   const stream = fs.createWriteStream(`../apps/${conversation.id}/index.html`);
-  await stream.write(html, () => {
+  stream.write(html, () => {
     console.log(`File 'apps/${conversation.id}/index.html' created successfully`);
+
+    stream.on('finish', async () => {
+      // Push to git
+      try {
+        await git.add('..');
+        await git.commit(`Created app '${conversation.id}'`);
+        await git.push('origin', 'main');
+        console.log('Committed and pushed new file');
+      }
+      catch (error: any) {
+        console.log(error.errorMessage);
+        response.status(400).send(error.errorMessage);
+      }
+    
+      const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
+      response.type('application/json').send(JSON.stringify({
+        message: conversation.choices[0].message,
+        url: url
+      }))
+    })
   });
-  stream.close();
-
-  // Push to git
-  try {
-    await git.add('..');
-    await git.commit(`Created app '${conversation.id}'`);
-    await git.push('origin', 'main');
-    console.log('Committed and pushed new file');
-  }
-  catch (error: any) {
-    console.log(error.errorMessage);
-    response.status(400).send(error.errorMessage);
-  }
-
-  const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
-  response.type('application/json').send(JSON.stringify({
-    message: conversation.choices[0].message,
-    url: url
-  }))
+  stream.end();
 });
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`))
