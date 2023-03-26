@@ -37,12 +37,12 @@ export const Home = () => {
               Introduction
             </h2>
             <p>
-              This site creates single-use apps in about 60 seconds. Type in what you want it to do,
+              This site creates single-use apps in about a minute. Type in what you want it to do,
               click the 'Create' button and ChatGPT does the rest. Results are dependent on the prompt,
               just like ChatGPT, and you'll only get what you ask for!
             </p>
             <p>
-              At the moment only simple apps can be created as there is a timeout of 30 seconds, so
+              At the moment only simple apps can be created as there is a timeout of 60 seconds, so
               don't ask for anything too complicated for now.
             </p>
           </Paper>
@@ -90,7 +90,7 @@ export const Home = () => {
                 }} />
             </FormControl>
             {error &&
-              <Alert severity='error' style={{ margin: '1em 0' }}>{error}</Alert>
+              <Alert severity='error' style={{ margin: '1em 0' }}>{JSON.stringify(error)}</Alert>
             }
             {!message &&
               <Button

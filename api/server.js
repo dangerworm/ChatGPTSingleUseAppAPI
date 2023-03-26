@@ -75,22 +75,21 @@ const createApp = async (model, prompt) => {
   }
 }
 
-
 app
-  .options('*', (req, res) => {
-    res.sendStatus(200);
-  })
-  .use((req, res, next) => {
-    res.header('Access-Control-Allow-Headers', 'Content-Type')
-    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    res.header('Access-Control-Allow-Origin', '*');
-
-    next();
-  })
   .use(bodyParser.urlencoded({ extended: true }))
   .use(bodyParser.json())
   .use(timeout('120s'));
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
+app.options('*', (req, res) => {
+  res.sendStatus(200);
+});
 
 app.get('/api/get-models', async (request, response) => {
   try {
