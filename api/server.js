@@ -48,9 +48,9 @@ const getModels = async () => {
   }
 }
 
-const createApp = async (prompt) => {
+const createApp = async (model, prompt) => {
   const request = {
-    model: "gpt-3.5-turbo",
+    model: model || "gpt-3.5-turbo",
     messages: [
       {
         role: "system", content: "You are a helpful assistant for creating single-page applications. " +
@@ -100,12 +100,12 @@ app.get('/api/get-models', async (request, response) => {
 });
 
 app.post('/api/create-app', async (request, response) => {
-  const requiredBodyKeys = ['prompt'];
+  const requiredBodyKeys = ['model', 'prompt'];
   if (!isRequestBodyValid(request, response, requiredBodyKeys)) {
     return;
   }
 
-  const conversation = await createApp(request.body['prompt']);
+  const conversation = await createApp(request.body['model'], request.body['prompt']);
   const content = conversation.choices[0].message?.content;
   if (!content) {
     response.send('Sorry, OpenAI did not return anything useful');
