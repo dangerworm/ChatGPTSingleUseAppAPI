@@ -107,8 +107,8 @@ app.post('/api/create-app', async (request, response) => {
     console.log(`Directory 'apps/${conversation.id}' created successfully`)
   });
   const stream = fs.createWriteStream(`../apps/${conversation.id}/index.html`);
-  stream.write(html, () => {
-    console.log(`File 'apps/${conversation.id}/index.html' created successfully`)
+  await stream.write(html, () => {
+    console.log(`File 'apps/${conversation.id}/index.html' created successfully`);
   });
   stream.close();
 

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scientific Calculator</title>
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous">
+	<!-- Custom CSS -->
+	<style>
+		#output {
+			height: 70px;
+			font-size: 2rem;
+			text-align: right;
+		}
+	</style>
+</head>
+<body>
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col-lg-4 offset-lg-4 bg-light rounded">
+				<div class="text-center pt-2">
+					<h3>Scientific Calculator</h3>
+				</div>
+				<div class="p-2">
+					<input type="text" class="form-control" id="output" disabled>
+				</div>
+				<div class="row p-2">
+					<button type="button" class="btn btn-secondary col-3" onclick="clearOutput()">C</button>
+					<button type="button" class="btn btn-secondary col-3" onclick="deleteOutput()">&larr;</button>
+					<button type="button" class="btn btn-secondary col-3" onclick="insertOutput('^')">^</button>
+					<button type="button" class="btn btn-secondary col-3" onclick="insertOutput('/')">/</button>
+				</div>
+				<div class="row p-2">
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('7')">7</button>
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('8')">8</button>
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('9')">9</button>
+					<button type="button" class="btn btn-secondary col-3" onclick="insertOutput('*')">*</button>
+				</div>
+				<div class="row p-2">
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('4')">4</button>
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('5')">5</button>
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('6')">6</button>
+					<button type="button" class="btn btn-secondary col-3" onclick="insertOutput('-')">-</button>
+				</div>
+				<div class="row p-2">
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('1')">1</button>
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('2')">2</button>
+					<button type="button" class="btn btn-light col-3" onclick="insertOutput('3')">3</button>
+					<button type="button" class="btn btn-secondary col-3" onclick="insertOutput('+')">+</button>
+				</div>
+				<div class="row p-2">
+					<button type="button" class="btn btn-light col-6" onclick="insertOutput('0')">0</button>
+					<button type="button" class="btn btn-secondary col-3" onclick="insertOutput('.')">.</button>
+					<button type="button" class="btn btn-danger col-3" onclick="calculate()">=</button>
+				</div>
+				<div class="row p-2">
+					<button type="button" class="btn btn-secondary col-4" onclick="insertOutput('sin(')">sin</button>
+					<button type="button" class="btn btn-secondary col-4" onclick="insertOutput('cos(')">cos</button>
+					<button type="button" class="btn btn-secondary col-4" onclick="insertOutput('tan(')">tan</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	
+	<script>
+		function insertOutput(x) {
+			document.getElementById('output').value += x;
+		}
+
+		function clearOutput() {
+			document.getElementById('output').value = '';
+		}
+
+		function deleteOutput() {
+			var output = document.getElementById('output').value;
+			document.getElementById('output').value = output.substring(0, output.length - 1);
+		}
+
+		function calculate() {
+			var expression = document.getElementById('output').value;
+			var result = eval(expression);
+			document.getElementById('output').value = result;
+		}
+	</script>
+</body>
+</html>
