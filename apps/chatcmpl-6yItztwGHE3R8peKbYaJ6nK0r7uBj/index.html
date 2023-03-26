@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pokedex</title>
+	<style>
+		.container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			align-items: center;
+			margin: 20px;
+		}
+		.pokemon {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin: 10px;
+			padding: 10px;
+			background-color: #f5f5f5;
+			border: 1px solid black;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		.pokemon:hover {
+			background-color: #ddd;
+		}
+		.pokemon img {
+			width: 100px;
+			height: 100px;
+			object-fit: contain;
+			margin-bottom: 10px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container"></div>
+	<script>
+		const container = document.querySelector('.container');
+
+		// Fetch all the Pokemon
+		fetch('https://pokeapi.co/api/v2/pokemon?limit=151')
+			.then(response => response.json())
+			.then(data => {
+				// For each Pokemon, create a card and append it to the container
+				data.results.forEach(pokemon => {
+					fetch(pokemon.url)
+						.then(response => response.json())
+						.then(data => {
+							const card = document.createElement('div');
+							card.classList.add('pokemon');
+							card.innerHTML = `
+								<img src=${data.sprites.other['official-artwork'].front_default}>
+								<p>${pokemon.name}</p>
+							`;
+							card.addEventListener('click', () => {
+								alert(`Type: ${data.types[0].type.name}`);
+							});
+							container.appendChild(card);
+						});
+				});
+			});
+	</script>
+</body>
+</html>
