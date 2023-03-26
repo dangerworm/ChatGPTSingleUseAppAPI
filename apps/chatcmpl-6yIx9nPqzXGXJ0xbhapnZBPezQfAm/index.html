@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scientific Calculator</title>
+	<style>
+		body {
+			background-color: #f5f5f5;
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+		#calculator {
+			margin: 30px auto;
+			padding: 20px;
+			border: 2px solid #ccc;
+			background-color: #fff;
+			box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.3);
+			width: 350px;
+		}
+		h1 {
+			font-size: 24px;
+			margin: 0 0 10px;
+			text-align: center;
+		}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		td {
+			padding: 5px;
+			font-size: 18px;
+			text-align: center;
+			border: 1px solid #ccc;
+			background-color: #fff;
+			cursor: pointer;
+		}
+		#result {
+			height: 60px;
+			font-size: 24px;
+			font-weight: bold;
+			text-align: right;
+			padding: 10px;
+			border: 1px solid #ccc;
+			background-color: #eee;
+		}
+		#clear {
+			background-color: #e74c3c;
+			color: #fff;
+		}
+		#equals {
+			background-color: #2ecc71;
+			color: #fff;
+		}
+	</style>
+</head>
+<body>
+	<div id="calculator">
+		<h1>Scientific Calculator</h1>
+		<table>
+			<tr>
+				<td colspan="4" id="result"></td>
+			</tr>
+			<tr>
+				<td onclick="clearAll()">C</td>
+				<td onclick="backspace()">&larr;</td>
+				<td onclick="insert('^')">^</td>
+				<td onclick="insert('/')">/</td>
+			</tr>
+			<tr>
+				<td onclick="insert('7')">7</td>
+				<td onclick="insert('8')">8</td>
+				<td onclick="insert('9')">9</td>
+				<td onclick="insert('*')">*</td>
+			</tr>
+			<tr>
+				<td onclick="insert('4')">4</td>
+				<td onclick="insert('5')">5</td>
+				<td onclick="insert('6')">6</td>
+				<td onclick="insert('-')">-</td>
+			</tr>
+			<tr>
+				<td onclick="insert('1')">1</td>
+				<td onclick="insert('2')">2</td>
+				<td onclick="insert('3')">3</td>
+				<td onclick="insert('+')">+</td>
+			</tr>
+			<tr>
+				<td onclick="insert('0')">0</td>
+				<td onclick="insert('.')">.</td>
+				<td onclick="insert('Math.PI')">\u03C0</td>
+				<td onclick="calculate()" id="equals">=</td>
+			</tr>
+		</table>
+	</div>
+	<script>
+		// get the result field
+		var resultField = document.getElementById('result');
+
+		// clear the result field
+		function clearAll() {
+			resultField.value = '';
+		}
+
+		// backspace
+		function backspace() {
+			resultField.value = resultField.value.slice(0, -1);
+		}
+
+		// insert a value into the result field
+		function insert(val) {
+			resultField.value += val;
+		}
+
+		// calculate the result
+		function calculate() {
+			try {
+				resultField.value = eval(resultField.value);
+			} catch(e) {
+				resultField.value = 'Error';
+			}
+		}
+	</script>
+</body>
+</html>
