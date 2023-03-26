@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Pokedex</title>
+	<style>
+		body {
+			font-family: Arial;
+			margin: 0;
+			padding: 0;
+		}
+		h1 {
+			text-align: center;
+			margin-top: 30px;
+		}
+		.container {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			grid-gap: 20px;
+			padding: 20px;
+		}
+		.card {
+			background-color: #f2f2f2;
+			border: 1px solid #ccc;
+			padding: 10px;
+			text-align: center;
+			box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+		}
+		.card:hover {
+			transform: scale(1.1);
+		}
+		.card img {
+			max-width: 100%;
+			height: auto;
+		}
+		.card h2 {
+			margin: 10px 0;
+		}
+	</style>
+</head>
+<body>
+	<h1>Pokedex</h1>
+	<div class="container"></div>
+	<script>
+		const container = document.querySelector('.container');
+
+		// API URL for getting Pokemon data
+		const url = 'https://pokeapi.co/api/v2/pokemon/?limit=20';
+
+		// Make an AJAX request to get the Pokemon data
+		fetch(url)
+			.then(response => response.json())
+			.then(data => {
+				// Loop through the results and create a card for each Pokemon
+				data.results.forEach(pokemon => {
+					// Create a new card element
+					const card = document.createElement('div');
+					card.className = 'card';
+
+					// Create a new image element
+					const img = document.createElement('img');
+					img.src = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`;
+
+					// Create a new heading element
+					const heading = document.createElement('h2');
+					heading.textContent = pokemon.name;
+
+					// Append the elements to the card
+					card.appendChild(img);
+					card.appendChild(heading);
+
+					// Append the card to the container
+					container.appendChild(card);
+				});
+			})
+			.catch(error => console.error(error));
+	</script>
+</body>
+</html>
