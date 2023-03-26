@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Scientific Calculator</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <style>
+    body {
+      background-color: #f3f3f3;
+      margin: 0;
+      padding: 0;
+    }
+
+    .calculator {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      margin: 20px auto;
+      max-width: 320px;
+      padding: 20px;
+    }
+
+    .calculator .display {
+      background-color: #f8f8f8;
+      border: none;
+      box-shadow: inset 0 -5px rgba(0, 0, 0, 0.1);
+      font-size: 36px;
+      font-weight: bold;
+      height: 60px;
+      margin: 0 0 20px;
+      padding: 0 10px;
+      text-align: right;
+      width: 100%;
+    }
+
+    .calculator .keypad {
+      display: grid;
+      grid-gap: 10px;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .calculator button {
+      border-radius: 5px;
+      font-size: 24px;
+      height: 50px;
+    }
+
+    .calculator button:active {
+      transform: scale(0.9);
+    }
+
+    .calculator .keypad .operator {
+      background-color: #f8af2c;
+      border: none;
+      color: #fff;
+      text-shadow: 1px 1px #cc7700;
+    }
+
+    .calculator .keypad .operator:hover {
+      background-color: #f8b53e;
+    }
+
+    .calculator .keypad .clear {
+      background-color: #fb514e;
+      border: none;
+      color: #fff;
+      text-shadow: 1px 1px #c23d38;
+    }
+
+    .calculator .keypad .clear:hover {
+      background-color: #fc6560;
+    }
+
+    .calculator .keypad .equal {
+      background-color: #4caf50;
+      border: none;
+      color: #fff;
+      text-shadow: 1px 1px #347d3d;
+    }
+
+    .calculator .keypad .equal:hover {
+      background-color: #5ecf63;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <input class="display" type="text" readonly>
+    <div class="keypad">
+      <button>7</button>
+      <button>8</button>
+      <button>9</button>
+      <button class="operator">/</button>
+      <button>4</button>
+      <button>5</button>
+      <button>6</button>
+      <button class="operator">*</button>
+      <button>1</button>
+      <button>2</button>
+      <button>3</button>
+      <button class="operator">-</button>
+      <button>0</button>
+      <button>.</button>
+      <button id="exp">EXP</button>
+      <button class="operator">+</button>
+      <button id="sin">sin</button>
+      <button id="cos">cos</button>
+      <button class="clear">C</button>
+      <button id="tan">tan</button>
+      <button id="ln">ln</button>
+      <button id="log">log</button>
+      <button class="equal">=</button>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      // Get the display and keypad elements
+      var display = $('.calculator .display');
+      var keypad = $('.calculator .keypad');
+
+      // Function to add a character to the display
+      function addCharacter(character) {
+        display.val(display.val() + character);
+      }
+
+      // Function to clear the display
+      function clearDisplay() {
+        display.val('');
+      }
+
+      // Add click event handlers for the keypad buttons
+      keypad.on('click', 'button', function() {
+        var button = $(this);
+        var buttonText = button.text();
+
+        // Handle numeric keys
+        if ($.isNumeric(buttonText)) {
+          addCharacter(buttonText);
+        }
+
+        // Handle operator keys
+        else if (button.hasClass('operator')) {
+          var operator = buttonText;
+          var currentValue = display.val();
+
+          // If the display is empty, use the previous result instead
+          if (currentValue === '') {
+            currentValue = display.data('result');
+          }
+
+          // Calculate the result and update the display and stored value
+          var newValue = eval(currentValue + operator + '0');
+          display.val(newValue);
+          display.data('result', newValue);
+        }
+
+        // Handle clear key
+        else if (button.hasClass('clear')) {
+          clearDisplay();
+          display.removeData('result');
+        }
+
+        // Handle trigonometric, logarithmic, and exponential functions
+        else {
+          var functionName = button.attr('id');
+          var currentValue = display.val();
+          var newValue;
+
+          switch (functionName) {
+            case 'sin':
+              newValue = Math.sin(currentValue);
+              break;
+            case 'cos':
+              newValue = Math.cos(currentValue);
+              break;
+            case 'tan':
+              newValue = Math.tan(currentValue);
+              break;
+            case 'ln':
+              newValue = Math.log(currentValue);
+              break;
+            case 'log':
+              newValue = Math.log10(currentValue);
+              break;
+            case 'exp':
+              newValue = Math.exp(currentValue);
+              break;
+          }
+
+          display.val(newValue);
+          display.data('result', newValue);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

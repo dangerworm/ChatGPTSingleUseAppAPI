@@ -30,7 +30,7 @@ const isRequestBodyValid = (request: any, response: any, requiredBodyKeys: strin
   }
 
   if (errorMessages.length > 0) {
-    console.log(errorMessages);
+    console.log("Errors  running createApp", errorMessages);
     response.status(400).send(errorMessages.join('; '));
     return false;
   }
@@ -63,7 +63,7 @@ const createApp = async (prompt: string): Promise<CreateChatCompletionResponse> 
     return response.data;
   }
   catch (error: any) {
-    console.log(error.response);
+    console.log("Error running createApp", error.response);
     return error.errorMessage;
   }
 }
@@ -104,11 +104,11 @@ app.post('/api/create-app', async (request, response) => {
 
   // Write file to new app folder
   fs.mkdir(`../apps/${conversation.id}`, () => {
-    console.log(`Directory 'apps/${conversation.id}' created successfully`)
+    // console.log(`Directory 'apps/${conversation.id}' created successfully`)
   });
   const stream = fs.createWriteStream(`../apps/${conversation.id}/index.html`);
   stream.write(html, () => {
-    console.log(`File 'apps/${conversation.id}/index.html' created successfully`);
+    // console.log(`File 'apps/${conversation.id}/index.html' created successfully`);
 
     stream.on('finish', async () => {
       // Push to git
@@ -116,16 +116,16 @@ app.post('/api/create-app', async (request, response) => {
         await git.add('..');
         await git.commit(`Created app '${conversation.id}'`);
         await git.push('origin', 'main');
-        console.log('Committed and pushed new file');
+        // console.log('Committed and pushed new file');
       }
       catch (error: any) {
-        console.log(error.errorMessage);
+        console.log("Error committing to git", error.errorMessage);
         response.status(400).send(error.errorMessage);
       }
     
       const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
       response.type('application/json').send(JSON.stringify({
-        message: conversation.choices[0].message,
+        message: conversation.choices[0].message?.content.substring(0, startIndex - 7),
         url: url
       }))
     })
