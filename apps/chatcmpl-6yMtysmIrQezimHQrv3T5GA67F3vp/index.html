@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Scientific Calculator</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css">
+	<!-- jQuery -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+	<!-- Bootstrap JS -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.min.js"></script> 
+	<!-- Calculator CSS -->
+	<style>
+		body {
+			background-color: #f8f9fa;
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			background-color: #fff;
+			border-radius: 10px;
+			box-shadow: 0px 0px 10px #777;
+			margin: 50px auto;
+			padding: 20px;
+			width: 400px;
+		}
+
+		h2 {
+			font-weight: bold;
+			font-size: 28px;
+			margin: 0 0 20px;
+			text-align: center;
+		}
+
+		form {
+			margin-bottom: 10px;
+		}
+
+		input[type="text"] {
+			background-color: #f2f2f2;
+			border: none;
+			border-radius: 5px;
+			color: #333;
+			font-size: 24px;
+			margin-bottom: 15px;
+			padding: 20px;
+			width: 100%;
+		}
+
+		input[type="button"] {
+			background-color: #007bff;
+			border: none;
+			border-radius: 5px;
+			color: #fff;
+			cursor: pointer;
+			font-size: 18px;
+			margin: 5px;
+			padding: 10px 20px;
+			width: 50%;
+		}
+
+		input[type="button"]:hover {
+			background-color: #0062cc;
+		}
+
+		.row {
+			margin-bottom: 10px;
+		}
+
+		.col-md-3 {
+			float: left;
+			margin-right: 10px;
+			width: 27%;
+		}
+
+		.col-md-9 {
+			float: left;
+			width: 70%;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h2>Scientific Calculator</h2>
+		<form>
+			<input type="text" id="screen" readonly>
+		</form>
+		<div class="row">
+			<div class="col-md-3">
+				<input type="button" value="(" onclick="addToScreen('(')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value=")" onclick="addToScreen(')')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="AC" onclick="clearScreen()">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="^2" onclick="square()">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<input type="button" value="7" onclick="addToScreen('7')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="8" onclick="addToScreen('8')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="9" onclick="addToScreen('9')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="/" onclick="addToScreen('/')">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<input type="button" value="4" onclick="addToScreen('4')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="5" onclick="addToScreen('5')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="6" onclick="addToScreen('6')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="*" onclick="addToScreen('*')">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<input type="button" value="1" onclick="addToScreen('1')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="2" onclick="addToScreen('2')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="3" onclick="addToScreen('3')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="-" onclick="addToScreen('-')">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<input type="button" value="0" onclick="addToScreen('0')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="." onclick="addToScreen('.')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="π" onclick="addToScreen('π')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="+" onclick="addToScreen('+')">
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-3">
+				<input type="button" value="sin" onclick="addToScreen('sin(')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="cos" onclick="addToScreen('cos(')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="tan" onclick="addToScreen('tan(')">
+			</div>
+			<div class="col-md-3">
+				<input type="button" value="=" onclick="calculate()">
+			</div>
+		</div>
+	</div>
+	<!-- Calculator JS -->
+	<script>
+		function addToScreen(value) {
+			// Add value to the calculator screen
+            $("#screen").val($('#screen').val() + value);
+            $("#screen").scrollTop($("#screen")[0].scrollHeight);
+        }
+
+        function clearScreen() {
+        	// Clear the calculator screen
+            $("#screen").val("");
+        }
+
+        function square() {
+        	// Square the input value
+        	var input = $('#screen').val();
+        	$('#screen').val(eval(input * input));
+        }
+
+        function calculate() {
+        	// Evaluate the math expression on the calculator screen
+            var input = $('#screen').val();
+            input = input.replace('π', Math.PI);
+            $('#screen').val(eval(input));
+        }
+	</script>	
+</body>
+</html>

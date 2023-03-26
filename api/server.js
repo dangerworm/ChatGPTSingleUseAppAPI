@@ -1,9 +1,8 @@
-import bodyParser from 'body-parser';
-import express from 'express';
-import fs from 'fs';
-import simpleGit from 'simple-git';
-import { OpenAIApi, Configuration, Model, CreateChatCompletionRequest, CreateChatCompletionResponse } from 'openai';
-import path from 'path';
+const bodyParser = require('body-parser');
+const express = require('express');
+const fs = require('fs');
+const simpleGit = require('simple-git');
+const openaiLibrary = require('openai');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,13 +12,13 @@ const git = simpleGit();
 
 const openAiKey = process.env.OPENAI_API_KEY || '';
 
-const openAiConfiguration = new Configuration({
+const openAiConfiguration = new openaiLibrary.Configuration({
   apiKey: openAiKey
 });
-const openai = new OpenAIApi(openAiConfiguration);
+const openai = new openaiLibrary.OpenAIApi(openAiConfiguration);
 
-const isRequestBodyValid = (request: any, response: any, requiredBodyKeys: string[]) => {
-  let errorMessages: string[] = [];
+const isRequestBodyValid = (request, response, requiredBodyKeys) => {
+  let errorMessages = [];
 
   for (let i in requiredBodyKeys) {
     if (!request.body || !request.body[requiredBodyKeys[i]]) {
@@ -41,15 +40,15 @@ const isRequestBodyValid = (request: any, response: any, requiredBodyKeys: strin
 const getModels = async () => {
   try {
     const response = await openai.listModels();
-    return response.data.data as Model[];
+    return response.data.data;
   }
-  catch (error: any) {
+  catch (error) {
     console.log("Error running getModels", error.response);
     return error.errorMessage;
   }
 }
 
-const createApp = async (prompt: string): Promise<CreateChatCompletionResponse> => {
+const createApp = async (prompt) => {
   const request = {
     model: "gpt-3.5-turbo",
     messages: [
@@ -62,13 +61,13 @@ const createApp = async (prompt: string): Promise<CreateChatCompletionResponse> 
       },
       { role: "user", content: prompt }
     ]
-  } as CreateChatCompletionRequest;
+  };
 
   try {
     const response = await openai.createChatCompletion(request);
     return response.data;
   }
-  catch (error: any) {
+  catch (error) {
     console.log("Error running createApp", error.response);
     return error.errorMessage;
   }
@@ -76,16 +75,26 @@ const createApp = async (prompt: string): Promise<CreateChatCompletionResponse> 
 
 app
   .use(bodyParser.urlencoded({ extended: true }))
-  .use(bodyParser.json());
+  .use(bodyParser.json())
+  .use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+
+    next();
+  });
+
+app.options('*', (req, res) => {
+  res.sendStatus(200);
+});
 
 app.get('/api/get-models', async (request, response) => {
   const models = await getModels();
 
-  const output = models.map((model: Model) => ({
+  const output = models.map((model) => ({
     id: model.id,
     created: new Date(model.created * 1000).toISOString()
   }));
-  output.sort((a: any, b: any) => a.created > b.created ? -1 : 1);
+  output.sort((a, b) => a.created > b.created ? -1 : 1);
 
   response.type('application/json').send(JSON.stringify(output));
 });
@@ -128,11 +137,11 @@ app.post('/api/create-app', async (request, response) => {
         const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
         response.type('application/json').send(JSON.stringify({
           error: null,
-          message: conversation.choices[0].message?.content.substring(0, startIndex - 9),
+          message: conversation.choices[0].message?.content.substring(0, startIndex - 7),
           url: url
         }));
       }
-      catch (error: any) {
+      catch (error) {
         console.log("Error committing to git", error.errorMessage);
         response.status(400).send({
           error: JSON.stringify(error),
