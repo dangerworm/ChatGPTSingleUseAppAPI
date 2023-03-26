@@ -127,13 +127,18 @@ app.post('/api/create-app', async (request, response) => {
 
         const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
         response.type('application/json').send(JSON.stringify({
+          error: null,
           message: conversation.choices[0].message?.content.substring(0, startIndex - 9),
           url: url
         }));
       }
       catch (error: any) {
         console.log("Error committing to git", error.errorMessage);
-        response.status(400).send(JSON.stringify(error));
+        response.status(400).send({
+          error: JSON.stringify(error),
+          message: "Sorry, something went wrong.",
+          url: null
+        });
       }
     })
   });
