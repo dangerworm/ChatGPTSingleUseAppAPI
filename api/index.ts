@@ -30,7 +30,7 @@ const isRequestBodyValid = (request: any, response: any, requiredBodyKeys: strin
   }
 
   if (errorMessages.length > 0) {
-    console.log("Errors  running createApp", errorMessages);
+    console.log("Errors with request", errorMessages.join('; '));
     response.status(400).send(errorMessages.join('; '));
     return false;
   }
@@ -44,7 +44,7 @@ const getModels = async () => {
     return response.data.data as Model[];
   }
   catch (error: any) {
-    console.log(error.response);
+    console.log("Error running getModels", error.response);
     return error.errorMessage;
   }
 }
@@ -53,7 +53,7 @@ const createApp = async (prompt: string): Promise<CreateChatCompletionResponse> 
   const request = {
     model: "gpt-3.5-turbo",
     messages: [
-      { role: "system", content: "You are a helpful assistant for creating single-page applications. Every time you receive a prompt you will return a single page of HTML, CSS, and Javascript which, when put into a '.html' file, will act to solve the user's problem or problems. You must not include anything except the code." },
+      { role: "system", content: "You are a helpful assistant for creating single-page applications. Every time you receive a prompt you will return a single page of HTML, CSS, and Javascript which, when put into a '.html' file, will act to solve the user's problem or problems. Import jQuery regardless of whether it is used, and use Bootstrap for styling. You must not include anything except the code." },
       { role: "user", content: prompt }
     ]
   } as CreateChatCompletionRequest;
