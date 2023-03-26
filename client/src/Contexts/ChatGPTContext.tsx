@@ -7,6 +7,7 @@ export interface IChatGPTContext {
   loading: boolean;
   message: string | undefined;
   models: Model[];
+  pageCode: string | undefined;
   url: string | undefined;
   createApp: (modelId: string, prompt: string) => void;
 }
@@ -14,11 +15,12 @@ export interface IChatGPTContext {
 export const ChatGPTContext = createContext<IChatGPTContext | undefined>(undefined);
 
 export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode }) => {
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string>();
+  const [message, setMessage] = useState<string | undefined>();
   const [models, setModels] = useState<Model[]>([]);
-  const [url, setUrl] = useState<string>();
+  const [pageCode, setPageCode] = useState<string | undefined>();
+  const [url, setUrl] = useState<string | undefined>();
 
   const baseUrl = process.env.REACT_APP_CHAT_GPT_SINGLE_USE_APP_API_URL;
 
@@ -35,9 +37,10 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
 
     setLoading(true);
     axios.post(`${baseUrl}/create-app`, { model: modelId, prompt })
-      .then(({data: { error, message, url}}: AxiosResponse<CreateAppResponse, any>) => {
+      .then(({data: { error, message, pageCode, url}}: AxiosResponse<CreateAppResponse, any>) => {
         setError(error);
         setMessage(message);
+        setPageCode(pageCode);
         setUrl(url);
         setLoading(false);
       })
@@ -63,6 +66,7 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
         loading,
         message,
         models,
+        pageCode,
         url,
         createApp
       }}

@@ -1,13 +1,22 @@
-import { Alert, Backdrop, Button, CircularProgress, FormControl, Grid, MenuItem, Paper, Select, TextField } from '@mui/material';
-import { useState } from 'react';
+import { Alert, Button, CircularProgress, FormControl, Grid, MenuItem, Paper, Select, Snackbar, TextField } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useChatGPTContext } from './Contexts/ChatGPTContext';
 import { Model } from './types';
 
 export const Home = () => {
-  const { error, loading, message, models, url, createApp } = useChatGPTContext();
+  const { error, loading, message, models, pageCode, url, createApp } = useChatGPTContext();
 
+  const [copied, setCopied] = useState(false);
   const [modelId, setModelId] = useState('gpt-3.5-turbo');
   const [prompt, setPrompt] = useState('');
+
+  useEffect(() => {
+    const appPreviewDiv = document.getElementById('app-preview');
+
+    if (appPreviewDiv && pageCode) {
+      appPreviewDiv.innerHTML = pageCode;
+    }
+  }, [pageCode])
 
   return (
     <>
@@ -83,19 +92,51 @@ export const Home = () => {
             {error &&
               <Alert severity='error' style={{ margin: '1em 0' }}>{error}</Alert>
             }
-            <Button
-              onClick={() => createApp(modelId, prompt)}
-              disabled={loading}>
-              {loading ? <CircularProgress /> : 'Create'}
-            </Button>
+            {!message &&
+              <Button
+                onClick={() => createApp(modelId, prompt)}
+                disabled={loading}>
+                {loading ? <CircularProgress /> : 'Create'}
+              </Button>
+            }
             {loading &&
               <Alert severity='info' style={{ marginTop: '1em' }}>
                 Your app is being created! It usually takes about 30 seconds...just sit tight.
               </Alert>
             }
+            {message && pageCode &&
+              <>
+                <Alert severity='success'>
+                  Your application has been created! The app is previewed below, but if you want
+                  to keep it you can copy the code underneath the preview below into a .html file.
+                </Alert>
+                <div id='app-preview' style={{ border: 'solid grey 1px', borderRadius: '5px', margin: '1em 0', minHeight: '20vh', padding: '1em' }}>
+                </div>
+                <div style={{ border: 'solid grey 1px', borderRadius: '5px', margin: '0.5em 0', padding: '1em' }}>
+                  <Button
+                    variant='contained'
+                    style={{ float: 'right' }}
+                    onClick={() => {
+                      setCopied(true);
+                      navigator.clipboard.writeText(pageCode);
+                    }}>
+                    Copy
+                  </Button>
+                  <Snackbar
+                    open={copied}
+                    onClose={() => setCopied(false)}
+                    autoHideDuration={2000}
+                    message="Copied to clipboard"
+                  />
+                  <code>
+                    <p>{pageCode.split(/\n/g).map((line, index) => <>{line}<br key={index} /></>)}</p>
+                  </code>
+                </div>
+              </>
+            }
             {
               message && url &&
-              <Alert severity='success'>
+              <Alert severity='success' style={{ marginTop: '1em' }}>
                 Your application has been created! Please click <a href={url} target='_blank' rel='noreferrer'>here</a>
                 to go to your app.
               </Alert>

@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('fs');
 const simpleGit = require('simple-git');
 const openaiLibrary = require('openai');
+const timeout = require('connect-timeout');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -73,20 +74,22 @@ const createApp = async (model, prompt) => {
   }
 }
 
+
 app
-  .use(bodyParser.urlencoded({ extended: true }))
-  .use(bodyParser.json())
+  .options('*', (req, res) => {
+    res.sendStatus(200);
+  })
   .use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type')
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
     res.header('Access-Control-Allow-Origin', '*');
 
     next();
-  });
+  })
+  .use(bodyParser.urlencoded({ extended: true }))
+  .use(bodyParser.json())
+  .use(timeout('120s'));
 
-app.options('*', (req, res) => {
-  res.sendStatus(200);
-});
 
 app.get('/api/get-models', async (request, response) => {
   try {
@@ -135,7 +138,22 @@ app.post('/api/create-app', async (request, response) => {
   // ChatGPT insists on saying something around the code, so strip it off
   const startIndex = content.indexOf('<!DOCTYPE html>');
   const stopIndex = content.indexOf('</html>') + 7;
-  const html = content.substring(startIndex, stopIndex);
+  const pageCode = content.substring(startIndex, stopIndex);
+
+  /**********************************************************************************
+  | When running locally, you can safely set this to 'true' to push straight to git |
+  **********************************************************************************/
+  const writeAndCommitFile = false;
+
+  if (!writeAndCommitFile) {
+    response.type('application/json').send(JSON.stringify({
+      error: null,
+      message: conversation.choices[0].message?.content.substring(0, startIndex - 7),
+      pageCode: pageCode,
+      url: null
+    }));
+    return;
+  };
 
   // Write file to new app folder
   const directory = `./apps/${conversation.id}`;
@@ -143,21 +161,19 @@ app.post('/api/create-app', async (request, response) => {
     // console.log(`Directory '${directory}' created successfully`)
   });
   const stream = fs.createWriteStream(`${directory}/index.html`);
-  stream.write(html, () => {
-    // console.log(`File 'apps/${conversation.id}/index.html' created successfully`);
-
+  stream.write(pageCode, () => {
     stream.on('finish', async () => {
       // Push to git
       try {
         await git.add('.');
         await git.commit(`Created app '${conversation.id}'`);
         await git.push('origin', 'main');
-        // console.log('Committed and pushed new file');
 
         const url = `https://htmlpreview.github.io/?https://github.com/dangerworm/ChatGPTSingleUseAppAPI/blob/main/apps/${conversation.id}/index.html`;
         response.type('application/json').send(JSON.stringify({
           error: null,
           message: conversation.choices[0].message?.content.substring(0, startIndex - 7),
+          pageCode: null,
           url: url
         }));
       }
@@ -166,6 +182,7 @@ app.post('/api/create-app', async (request, response) => {
         response.status(400).send({
           error: JSON.stringify(error),
           message: "Sorry, something went wrong.",
+          pageCode: null,
           url: null
         });
       }

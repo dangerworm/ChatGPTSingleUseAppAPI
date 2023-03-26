@@ -6,5 +6,6 @@ export interface Model {
 export interface CreateAppResponse {
   error?: string;
   message: string;
+  pageCode?: string;
   url?: string;
 }
