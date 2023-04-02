@@ -4,7 +4,7 @@ import { useChatGPTContext } from './Contexts/ChatGPTContext';
 import { Model } from './types';
 
 export const Home = () => {
-  const { error, loading, message, models, pageCode, url, createApp } = useChatGPTContext();
+  const { error, loading, message, models, pageCode, createApp } = useChatGPTContext();
 
   const [copied, setCopied] = useState(false);
   const [modelId, setModelId] = useState('gpt-3.5-turbo');
@@ -133,13 +133,6 @@ export const Home = () => {
                   </code>
                 </div>
               </>
-            }
-            {
-              message && url &&
-              <Alert severity='success' style={{ marginTop: '1em' }}>
-                Your application has been created! Please click <a href={url} target='_blank' rel='noreferrer'>here</a>
-                to go to your app.
-              </Alert>
             }
           </Paper>
         </Grid >

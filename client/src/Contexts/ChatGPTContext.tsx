@@ -1,6 +1,8 @@
-import axios, { AxiosResponse } from "axios";
+import { io } from "socket.io-client";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { CreateAppResponse, Model } from "../types";
+import { APP_CREATED, CREATE_APP, ERROR, GET_MODELS, MODELS_RETURNED } from "../constants";
+import { Model } from "../types";
+import { v4 as uuidv4 } from "uuid";
 
 export interface IChatGPTContext {
   error: string | undefined;
@@ -8,7 +10,6 @@ export interface IChatGPTContext {
   message: string | undefined;
   models: Model[];
   pageCode: string | undefined;
-  url: string | undefined;
   createApp: (modelId: string, prompt: string) => void;
 }
 
@@ -20,9 +21,50 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
   const [message, setMessage] = useState<string | undefined>();
   const [models, setModels] = useState<Model[]>([]);
   const [pageCode, setPageCode] = useState<string | undefined>();
-  const [url, setUrl] = useState<string | undefined>();
 
-  const baseUrl = process.env.REACT_APP_CHAT_GPT_SINGLE_USE_APP_API_URL;
+  const baseUrl = 'https://chat-gpt-single-use-app-api.herokuapp.com';
+  const socket = io(baseUrl);
+
+  useEffect(() => {
+    socket.on(MODELS_RETURNED, (requestId, httpStatusCode, data) => {
+      const output = data.map((datum: any) => ({
+        id: datum.id,
+        created: new Date(datum.created * 1000).toISOString()
+      }));
+      output.sort((a: Model, b: Model) => a.created > b.created ? -1 : 1);
+
+      setModels(output);
+    });
+
+    socket.on(APP_CREATED, (requestId, httpStatusCode, content) => {
+      // ChatGPT insists on saying something around the code, so strip it off
+      const startIndex = content.indexOf('<!DOCTYPE html>');
+      const stopIndex = content.indexOf('</html>') + 7;
+      const pageCode = content.substring(startIndex, stopIndex);
+
+      setError(undefined);
+      setMessage(content.substring(0, startIndex - 7));
+      setPageCode(pageCode);
+      setLoading(false);
+    });
+
+    socket.on(ERROR, (requestId, httpStatusCode, data) => {
+      setError(data);
+      setMessage(undefined);
+      setPageCode(undefined);
+      setLoading(false);
+    });
+
+    return () => {
+      socket.disconnect();
+    }
+  }, [socket]);
+
+  useEffect(() => {
+    if (!models || models.length === 0) {
+      socket.emit(GET_MODELS, { requestId: uuidv4() });
+    }
+  }, [socket, models]);
 
   const createApp = useCallback((modelId: string, prompt: string) => {
     if (!modelId) {
@@ -36,28 +78,8 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
     }
 
     setLoading(true);
-    axios.post(`${baseUrl}/create-app`, { model: modelId, prompt }, { timeout: 120000 })
-      .then(({data: { error, message, pageCode, url}}: AxiosResponse<CreateAppResponse, any>) => {
-        setError(error);
-        setMessage(message);
-        setPageCode(pageCode);
-        setUrl(url);
-        setLoading(false);
-      })
-      .catch(response => {
-        setError(response);
-      });
-  }, [baseUrl]);
-
-  useEffect(() => {
-    async function getModels() {
-      await axios.get(`${baseUrl}/get-models`)
-      .then(({data}: AxiosResponse<any, any>) => {
-        setModels(data as Model[]);
-      });
-    }
-    getModels();
-  }, [baseUrl]);
+    socket.emit(CREATE_APP, { model: modelId, prompt });
+  }, [socket]);
 
   return (
     <ChatGPTContext.Provider
@@ -67,7 +89,6 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
         message,
         models,
         pageCode,
-        url,
         createApp
       }}
     >

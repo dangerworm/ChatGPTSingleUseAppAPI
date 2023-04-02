@@ -5,15 +5,9 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug API",
-      "command": "npm start",
-      "request": "launch",
-      "type": "node-terminal"
-    },
-    {
-      "name": "Chrome Client",
       "type": "chrome",
       "request": "launch",
+      "name": "Launch Chrome against localhost",
       "url": "http://localhost:3000",
       "webRoot": "${workspaceFolder}"
     }
