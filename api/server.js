@@ -45,21 +45,9 @@ io.on('connection', (socket) => {
     hub.getModels(requestId);
   });
 
-  socket.on(MODELS_RETURNED, ({ requestId, httpStatusCode, data }) => {
-    console.log(MODELS_RETURNED, requestId, httpStatusCode, data);
-  });
-
   socket.on(CREATE_APP, ({ requestId, model, prompt }) => {
     hub.createApp(requestId, model, prompt);
   })
-
-  socket.on(APP_CREATED, ({ requestId, httpStatusCode, data }) => {
-    console.log(APP_CREATED, requestId, httpStatusCode, data);
-  });
-
-  socket.on(ERROR, ({ requestId, httpStatusCode, data }) => {
-    console.error(ERROR, requestId, httpStatusCode, data);
-  });
 
   socket.on('disconnect', () => {
     console.log('Client disconnected');

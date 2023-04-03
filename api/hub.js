@@ -1,6 +1,6 @@
 const openaiLibrary = require('openai');
 
-const { MODELS_RETURNED, APP_CREATED, ERROR} = require('./constants');
+const { MODELS_RETURNED, APP_CREATED, ERROR } = require('./constants');
 
 const openAiKey = process.env.OPENAI_API_KEY || '';
 
@@ -23,7 +23,7 @@ class Hub {
     this.io.on(action, callback);
   }
 
-  error = async ({requestId, httpStatusCode, error}) => {
+  error = async ({ requestId, httpStatusCode, error }) => {
     this.send(ERROR, { requestId, httpStatusCode, error });
   }
 
@@ -72,7 +72,7 @@ class Hub {
       return;
     }
 
-    this.send(APP_CREATED, { requestId, httpStatusCode: 200, content });
+    this.send(APP_CREATED, { requestId, httpStatusCode: 200, data: content });
   }
 
   tryCreateApp = async (model, prompt) => {

@@ -22,7 +22,8 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
   const [models, setModels] = useState<Model[]>([]);
   const [pageCode, setPageCode] = useState<string | undefined>();
 
-  const baseUrl = 'https://chat-gpt-single-use-app-api.herokuapp.com';
+  //const baseUrl = 'https://chat-gpt-single-use-app-api.herokuapp.com';
+  const baseUrl = 'http://localhost:5000';
   const socket = io(baseUrl);
 
   useEffect(() => {
@@ -36,14 +37,14 @@ export const ChatGPTContextProvider = ({ children }: { children: React.ReactNode
       setModels(output);
     });
 
-    socket.on(APP_CREATED, (requestId, httpStatusCode, content) => {
+    socket.on(APP_CREATED, (requestId, httpStatusCode, data) => {
       // ChatGPT insists on saying something around the code, so strip it off
-      const startIndex = content.indexOf('<!DOCTYPE html>');
-      const stopIndex = content.indexOf('</html>') + 7;
-      const pageCode = content.substring(startIndex, stopIndex);
+      const startIndex = data.indexOf('<!DOCTYPE html>');
+      const stopIndex = data.indexOf('</html>') + 7;
+      const pageCode = data.substring(startIndex, stopIndex);
 
       setError(undefined);
-      setMessage(content.substring(0, startIndex - 7));
+      setMessage(data.substring(0, startIndex - 7));
       setPageCode(pageCode);
       setLoading(false);
     });
